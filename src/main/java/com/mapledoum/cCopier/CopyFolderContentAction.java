@@ -111,18 +111,21 @@ public class CopyFolderContentAction extends AnAction {
         StringBuilder content = new StringBuilder();
         List<String> copiedFiles = new ArrayList<>();
 
-        String topInstruction = (String) config.getOrDefault("top_instruction", "");
-        String commentPrefix = (String) config.getOrDefault("comment_prefix", "//");
+        String topInstruction = getConfigString(config, "top_instruction", "");
+        String commentPrefix = getConfigString(config, "comment_prefix", "//");
+        String fileInstructions = getConfigString(config, "to_file_instructions", "");
+        String filePrefix = getConfigString(config, "file_prefix", "");
+        String fileSeparator = getConfigString(config, "file_separator", "\n\n");
+        boolean useRelativePaths = getConfigBoolean(config, "use_relative_paths", true);
+        boolean includeLastSeparator = getConfigBoolean(config, "include_last_separator", false);
 
         if (!topInstruction.isEmpty()) {
             content.append(commentPrefix).append(" ").append(topInstruction).append("\n\n");
         }
 
-        collectFolderContent(project, directory, content, copiedFiles, config);
+        collectFolderContent(project, directory, content, copiedFiles, fileInstructions, commentPrefix, filePrefix, fileSeparator, useRelativePaths);
 
         // Remove last separator if not wanted
-        boolean includeLastSeparator = (boolean) config.getOrDefault("include_last_separator", false);
-        String fileSeparator = (String) config.getOrDefault("file_separator", "\n\n");
         if (!includeLastSeparator && content.length() >= fileSeparator.length()) {
             content.setLength(content.length() - fileSeparator.length());
         }
@@ -137,15 +140,21 @@ public class CopyFolderContentAction extends AnAction {
             showNoFilesNotification(project);
         }
     }
-    private void collectFolderContent(Project project, PsiDirectory directory, StringBuilder content,
-                                      List<String> copiedFiles, Map<String, Object> config) {
-        String fileInstructions = (String) config.getOrDefault("to_file_instructions", "");
-        String commentPrefix = (String) config.getOrDefault("comment_prefix", "//");
-        String filePrefix = (String) config.getOrDefault("file_prefix", "");
-        String fileSeparator = (String) config.getOrDefault("file_separator", "\n\n");
+    private String getConfigString(Map<String, Object> config, String key, String defaultValue) {
+        Object value = config.get(key);
+        return (value instanceof String) ? (String) value : defaultValue;
+    }
 
+    private boolean getConfigBoolean(Map<String, Object> config, String key, boolean defaultValue) {
+        Object value = config.get(key);
+        return (value instanceof Boolean) ? (Boolean) value : defaultValue;
+    }
+
+    private void collectFolderContent(Project project, PsiDirectory directory, StringBuilder content,
+                                      List<String> copiedFiles, String fileInstructions, String commentPrefix,
+                                      String filePrefix, String fileSeparator, boolean useRelativePaths) {
         for (PsiFile file : directory.getFiles()) {
-            String relativePath = getRelativePath(project, file.getVirtualFile(), config);
+            String relativePath = getRelativePath(project, file.getVirtualFile(), useRelativePaths);
             content.append(commentPrefix).append(" ");
             if (!filePrefix.isEmpty()) {
                 content.append(filePrefix).append(" ");
@@ -160,13 +169,13 @@ public class CopyFolderContentAction extends AnAction {
         }
 
         for (PsiDirectory subDir : directory.getSubdirectories()) {
-            collectFolderContent(project, subDir, content, copiedFiles, config);
+            collectFolderContent(project, subDir, content, copiedFiles, fileInstructions, commentPrefix, filePrefix, fileSeparator, useRelativePaths);
         }
     }
 
-    private String getRelativePath(Project project, VirtualFile file, Map<String, Object> config) {
-        boolean useRelativePaths = (boolean) config.getOrDefault("use_relative_paths", true);
 
+
+    private String getRelativePath(Project project, VirtualFile file, boolean useRelativePaths) {
         if (useRelativePaths) {
             VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
             if (projectDir != null) {

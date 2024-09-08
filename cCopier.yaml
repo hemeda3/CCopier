@@ -3,23 +3,23 @@
 # Top instruction: This message appears at the beginning of the copied content.
 # It can be used to provide context or instructions for the copied content.
 # Default: empty (no top instruction)
-top_instruction: "#This is the copied content of the folder"
+top_instruction:
 
 # File instructions: This message appears before the content of each file.
 # It can be used to introduce or explain each file's content.
 # Default: empty (no file instructions)
-to_file_instructions: "#Content of the file:"
+to_file_instructions: "Content of the file:"
 
 # Comment prefix: The symbol(s) used to denote comments in the copied content.
 # This is used for the top instruction and file instructions.
 # Common values: "#", "//", "/*", "--"
 # Default: "//"
-comment_prefix: "##"
+comment_prefix: "//"
 
 # File prefix: Text that appears before each file path in the copied content.
 # This can be used to clearly mark the beginning of each file's section.
 # Default: empty (no file prefix)
-file_prefix: "File#:!"
+file_prefix: "File:"
 
 # Use relative paths: Determines whether to use paths relative to the project root.
 # If false, full file paths will be used.

@@ -3,45 +3,52 @@
 
 <idea-plugin>
 
-  <!-- Unique id for this plugin. Must stay constant for the life of the plugin. -->
   <id>com.mapledoum.ccopier</id>
-
-
-  <!-- Text to display as name on Settings | Plugin page -->
   <name>CCopier: Multi-File Code Copy for AI Tasks</name>
-  <!-- Indicate this plugin can be loaded in all IntelliJ Platform-based products. -->
-  <depends>com.intellij.modules.platform</depends>
+  <vendor email="info@mapledoum.com" url="https://mapledoum.com">Maple Doum </vendor>
 
+  <description><![CDATA[
+    CCopier is a powerful plugin for IntelliJ IDEA that allows you to easily copy the content of multiple files in a folder.
+    It's particularly useful for preparing code snippets for AI tasks or documentation.
 
-  <!-- Text to display as description on Settings | Plugin page -->
-  <description>
-    <![CDATA[
-      This sample plugin illustrates how to create your custom tool window.<br>
-      See the
-      <a href="https://plugins.jetbrains.com/docs/intellij/tool-windows.html">Tool Windows</a>
-      for more information.
-    ]]>
-  </description>
-  <change-notes>
-    <![CDATA[
-      <ul>
-        <li><b>2.0.0</b> Convert to Gradle-based plugin.</li>
-        <li><b>1.0.0</b> Release 2018.3 and earlier.</li>
-      </ul>
-    ]]>
-  </change-notes>
+    Features:
+    <ul>
+      <li>Copy content of all files in a selected folder</li>
+      <li>Customizable output format through YAML configuration</li>
+      <li>Support for relative or absolute file paths</li>
+      <li>Configurable file separators and comment prefixes</li>
+      <li>Easy to use - just right-click on a folder in the Project view</li>
+    </ul>
+  ]]></description>
+
+  <change-notes><![CDATA[
+    <ul>
+      <li><b>1.0.0</b> Initial release of CCopier</li>
+    </ul>
+  ]]></change-notes>
 
   <!-- Text to display as company information on Settings | Plugin page -->
-  <vendor url="https://plugins.jetbrains.com">IntelliJ Platform SDK</vendor>
 
-  <extensions defaultExtensionNs="com.intellij">
-      <toolWindow id="CCopier" secondary="true"
-                  anchor="right"
-                  icon="/icons/pluginIcon.svg"
-                factoryClass="org.intellij.sdk.toolWindow.FileListToolWindowFactory"/>
-  </extensions>
   <extensions defaultExtensionNs="com.intellij">
     <notificationGroup id="File List Tool Window" displayType="BALLOON" />
   </extensions>
+
+  <actions>
+    <action id="com.mapledoum.cCopier.CopyFolderContentAction"
+            class="com.mapledoum.cCopier.CopyFolderContentAction"
+            text="Copy Folder Content (CCopier)"
+            description="Copy the content of all files in this folder"
+            icon="/icons/pluginIcon.svg">
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="CopyReference"/>
+    </action>
+
+  </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <notificationGroup id="Copy Folder Content" displayType="BALLOON" />
+
+  </extensions>
+
+
 
 </idea-plugin>
