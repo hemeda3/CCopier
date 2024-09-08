@@ -43,13 +43,26 @@ public class CopyFolderContentAction extends AnAction {
         PsiDirectory[] directories = view.getDirectories();
         if (directories.length == 0) return;
 
-        PsiDirectory directory = directories[0];
-
         Map<String, Object> config = loadConfiguration(project);
 
+        StringBuilder content = new StringBuilder();
+        List<String> copiedFiles = new ArrayList<>();
 
-        copyFolderContent(project, directory, config);
+        for (PsiDirectory directory : directories) {
+            copyFolderContent(project, directory, config, content, copiedFiles);
+        }
+
+        if (!copiedFiles.isEmpty()) {
+            StringSelection stringSelection = new StringSelection(content.toString());
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(stringSelection, null);
+
+            showCopiedFilesNotification(project, copiedFiles);
+        } else {
+            showNoFilesNotification(project);
+        }
     }
+
 
 
     private Map<String, Object> loadConfiguration(Project project) {
@@ -107,10 +120,7 @@ public class CopyFolderContentAction extends AnAction {
             return new HashMap<>();  // Return empty map if default config can't be loaded
         }
     }
-    private void copyFolderContent(Project project, PsiDirectory directory, Map<String, Object> config) {
-        StringBuilder content = new StringBuilder();
-        List<String> copiedFiles = new ArrayList<>();
-
+    private void copyFolderContent(Project project, PsiDirectory directory, Map<String, Object> config, StringBuilder content, List<String> copiedFiles) {
         String topInstruction = getConfigString(config, "top_instruction", "");
         String commentPrefix = getConfigString(config, "comment_prefix", "//");
         String fileInstructions = getConfigString(config, "to_file_instructions", "");
@@ -119,7 +129,7 @@ public class CopyFolderContentAction extends AnAction {
         boolean useRelativePaths = getConfigBoolean(config, "use_relative_paths", true);
         boolean includeLastSeparator = getConfigBoolean(config, "include_last_separator", false);
 
-        if (!topInstruction.isEmpty()) {
+        if (content.length() == 0 && !topInstruction.isEmpty()) {
             content.append(commentPrefix).append(" ").append(topInstruction).append("\n\n");
         }
 
@@ -128,16 +138,6 @@ public class CopyFolderContentAction extends AnAction {
         // Remove last separator if not wanted
         if (!includeLastSeparator && content.length() >= fileSeparator.length()) {
             content.setLength(content.length() - fileSeparator.length());
-        }
-
-        if (!copiedFiles.isEmpty()) {
-            StringSelection stringSelection = new StringSelection(content.toString());
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(stringSelection, null);
-
-            showCopiedFilesNotification(project, copiedFiles);
-        } else {
-            showNoFilesNotification(project);
         }
     }
     private String getConfigString(Map<String, Object> config, String key, String defaultValue) {
