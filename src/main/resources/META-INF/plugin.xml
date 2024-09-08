@@ -3,6 +3,7 @@
 
 <idea-plugin>
 
+  <depends>com.intellij.modules.platform</depends>
   <id>com.mapledoum.ccopier</id>
   <name>CCopier: Multi-File Code Copy for AI Tasks</name>
   <vendor email="info@mapledoum.com" url="https://mapledoum.com">Maple Doum </vendor>
