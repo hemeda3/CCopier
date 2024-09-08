@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.mapledoum"
-version = "2.0.1"
+version = "2.0.4"
 
 repositories {
   mavenCentral()
@@ -20,6 +20,7 @@ java {
 
 // See https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
+
   version.set("2023.3.7")
   plugins.set(listOf("com.intellij.java"))
 
